@@ -1,0 +1,6 @@
+area_name,definition,lat_min_s,lon_min_e,lat_max_s,lon_max_e,extent_km2,date,source
+jacc_7th_arc_full,"Full extent of seventh arc per JACC",20.0,,39.0,,~120000 (original southern corridor),2014-06,JACC via MarineLink 20 Jun 2014
+jacc_priority_area,"Prioritized search along arc: ~350 NM length, within 20 NM west / 30 NM east of arc",,, ,60000,2014-06,JACC via MarineLink 20 Jun 2014
+atsb_fpr_high_probability,"ATSB First Principles Review remaining high-probability area along the seventh arc",32.5,,36.0,,~ (46 km each side of arc),2015,ATSB First Principles Review via Wikipedia: Search for MH370
+unsearched_likely_impact,"Unsearched area judged most likely impact location; centred 34S 93E",34.0,93.0,,,25000,2016-12-20,Wikipedia: Search for MH370
+csiro_most_likely_impact,"CSIRO final drift study most likely impact location (35deg36'S 92deg48'E)",35.6,92.8,,,~ (point estimate),2017-10,CSIRO via Wikipedia: Search for MH370

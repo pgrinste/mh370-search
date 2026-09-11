@@ -2,11 +2,19 @@
 
 Usage:  python -m mh370.run_analysis [--candidates 2000]
 Output: output/mh370_probability_heatmap.png + top cells printed to stdout.
+
+Note on hardware: sustained multithreaded load is a known failure mode on the
+Intel i9-14900K, so we pin BLAS threads (set OMP_NUM_THREADS before numpy is
+imported). Override with your own value if you know your chip is stable.
 """
 
 import argparse
 import csv
 import os
+
+# Pin BLAS threads BEFORE numpy import (see module docstring).
+os.environ.setdefault("OMP_NUM_THREADS", "8")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "8")
 
 import matplotlib
 
@@ -14,9 +22,9 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .drift import advect
+from .bfo import bfo_weights
+from .drift import min_distance_to
 from .flight_path import simulate_candidates
-from .geodesy import haversine_nm
 from .ping_arc import ARC_ANCHOR, arc_segment, build_seventh_arc
 from .scoring import score_grid
 
@@ -63,13 +71,18 @@ def main():
     candidates = simulate_candidates(arc, n=args.candidates)
     print(f"accepted {len(candidates)} candidate paths")
 
+    # BFO consistency weights (relative likelihood vs observed handshake Doppler)
+    weights = bfo_weights(candidates)
+    n_surviving = sum(1 for w in weights if w > 0.01)   # >1% of best
+    print(f"BFO scoring: {n_surviving} candidates retain >1% relative weight")
+
     debris = load_debris()
     print(f"{len(debris)} debris items with drift periods")
 
     # grid over the southern Indian Ocean search region (v1: 1 deg resolution)
     lats = [round(-40.0 + i * 1.0, 2) for i in range(25)]   # -40 .. -16
     lons = [round(78.0 + j * 1.0, 2) for j in range(31)]    # 78 .. 108
-    grid, best = score_grid(candidates, debris, lats, lons)
+    grid, best = score_grid(candidates, weights, debris, lats, lons)
 
     top = []
     for i, lat in enumerate(lats):
@@ -80,6 +93,20 @@ def main():
     print("top cells (score, lat S, lon E):")
     for s, la, lo in top[:5]:
         print(f"  {s / best:.3f} of max   {la:.2f}, {lo:.2f}")
+
+    # ---- drift calibration vs holdout validation ----
+    if top:
+        _, t_lat, t_lon = top[0]
+        print("\ndrift check from top cell "
+              f"({t_lat:.1f}, {t_lon:.1f}) - closest approach over the window:")
+        for item in debris:
+            d, day = min_distance_to(
+                t_lat, t_lon, item["drift_days"],
+                item["find_lat"], item["find_lon"],
+            )
+            tag = "calibration" if "flaperon" in item["item"] else "held-out"
+            print(f"  {tag:12s} {item['item'][:38]:40s} "
+                  f"{d:7.0f} nm (day ~{day})")
 
     # ---- plot ----
     seg = arc_segment(arc)
@@ -115,7 +142,7 @@ def main():
     ax.set_xlabel("longitude (deg E)")
     ax.set_ylabel("latitude (deg S shown as negative)")
     ax.set_title("MH370: candidate impact probability along the seventh arc\n"
-                 "(path likelihood x debris-drift agreement; v1 simplified model)")
+                 "(path likelihood x BFO agreement x debris-drift agreement; v1.5 model)")
     ax.legend(loc="upper right", fontsize=8)
     os.makedirs(os.path.join(REPO_ROOT, "output"), exist_ok=True)
     out = os.path.join(REPO_ROOT, "output", "mh370_probability_heatmap.png")

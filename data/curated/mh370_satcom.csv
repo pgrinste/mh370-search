@@ -1,0 +1,14 @@
+event,time_utc,bto_us_corrected,bfo_hz,channel,bto_usable,bfo_usable,note,source
+gate_logon,2014-03-08T08:00:13Z,14820,87,R1200,Y_calibration,Y,"Pre-departure calibration at gate (published 16:00 MYT)",Inmarsat SU log via Malaysian government release May 2014
+last_acars,2014-03-08T09:07:29Z,,,N,N,"Last ACARS transmission; position 5.27N 102.79E (published 17:07 MYT)",DSTG Book (Davey et al. 2016)
+aes_logon,2014-03-08T10:25:27Z,12520,142,R1200,Y,Y,"SDU reboot after power cycle; BFO unreliable (oscillator warm-up transient); published 18:25 MYT",Inmarsat SU log; Ashton et al. 2014 Table 6
+phone_call_1,2014-03-08T10:39:55Z,,88,C-channel,N,Y,"First 'satellite phone call'; BFO is mean of 51 values (86-90 Hz); published 18:39 MYT",Inmarsat SU log; Ashton et al. 2014
+ges_handshake_2,2014-03-08T11:41:03Z,11500,111,R1200,Y,Y,"First clean BTO+BFO point (published 19:41 MYT)",Inmarsat SU log; Holland 2017
+ges_handshake_3,2014-03-08T12:41:05Z,11740,141,R1200,Y,Y,"(published 20:41 MYT)",Inmarsat SU log; Holland 2017
+ges_handshake_4,2014-03-08T13:41:27Z,12780,168,R1200,Y,Y,"(published 21:41 MYT)",Inmarsat SU log; Holland 2017
+ges_handshake_5,2014-03-08T14:41:22Z,14540,204,R1200,Y,Y,"(published 22:41 MYT)",Inmarsat SU log; Holland 2017
+phone_call_2,2014-03-08T15:15:02Z,,217,C-channel,N,Y,"Second 'satellite phone call'; BFO is mean of 29 values (216-222 Hz); published 23:15 MYT",Inmarsat SU log; Ashton et al. 2014
+ges_handshake_6,2014-03-09T00:10:00Z,18040,252,R1200,Y,Y,"Last scheduled handshake before the final log-on (published '00:10'; time base as published - see data dictionary)",Inmarsat SU log; Holland 2017
+aes_logon_final,2014-03-09T00:19:29Z,18400,182,R1200,Y,Y,"Final handshake: AES log-on request (Holland 2017 gives 00:19:29Z; = 08:19 MYT)",Inmarsat SU log; Holland 2017 Tables IV-VII
+aes_logon_final_2,2014-03-09T00:19:37Z,,,-2,R1200,N,"Final transmission (log-on acknowledge); BFO carries a warm-up caveat",Holland 2017
+no_response,2014-03-09T01:15:56Z,,,,N,"Unanswered GES ping; aircraft lost comm ability between 00:19 and 01:15 UTC",DSTG Book (Davey et al. 2016)

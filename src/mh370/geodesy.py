@@ -1,8 +1,35 @@
-"""Spherical geometry helpers (WGS84, nautical miles)."""
+"""Spherical and WGS84 ellipsoidal geometry helpers (nautical miles / km)."""
 
 import math
 
 EARTH_RADIUS_NM = 3440.065
+
+# WGS84 ellipsoid
+WGS84_A_KM = 6378.137          # semi-major axis, km
+WGS84_F = 1.0 / 298.257223563  # flattening
+_WGS84_E2 = WGS84_F * (2.0 - WGS84_F)
+
+
+def geodetic_to_ecef(lat_deg, lon_deg, h_km=0.0):
+    """Geodetic (lat, lon, height above ellipsoid) -> ECEF km."""
+    p = math.radians(lat_deg)
+    l = math.radians(lon_deg)
+    n = WGS84_A_KM / math.sqrt(1.0 - _WGS84_E2 * math.sin(p) ** 2)
+    return (
+        (n + h_km) * math.cos(p) * math.cos(l),
+        (n + h_km) * math.cos(p) * math.sin(l),
+        (n * (1.0 - _WGS84_E2) + h_km) * math.sin(p),
+    )
+
+
+def ecef_to_geodetic(x, y, z):
+    """ECEF km -> (lat_deg, lon_deg). Iterative solution, good to ~1e-6 deg."""
+    lat = math.atan2(z, math.hypot(x, y) * (1.0 - _WGS84_E2))
+    for _ in range(12):
+        n = WGS84_A_KM / math.sqrt(1.0 - _WGS84_E2 * math.sin(lat) ** 2)
+        h = math.hypot(x, y) / math.cos(lat) - n
+        lat = math.atan2(z + _WGS84_E2 * n * math.sin(lat), math.hypot(x, y))
+    return math.degrees(lat), math.degrees(math.atan2(y, x))
 
 
 def _to_rad(x):
@@ -41,3 +68,19 @@ def destination_point(lat, lon, bearing_deg, dist_nm):
         math.cos(dr) - math.sin(p1) * math.sin(p2),
     )
     return math.degrees(p2), (math.degrees(l2) + 540.0) % 360.0 - 180.0
+
+
+def surface_tangent_ecef(lat_deg, lon_deg, bearing_deg):
+    """Unit vector in ECEF of the local horizontal direction at true bearing (deg)."""
+    p = math.radians(lat_deg)
+    l = math.radians(lon_deg)
+    b = math.radians(bearing_deg)
+    east = (-math.sin(l), math.cos(l), 0.0)
+    north = (
+        -math.sin(p) * math.cos(l),
+        -math.sin(p) * math.sin(l),
+        math.cos(p),
+    )
+    return tuple(
+        east[i] * math.sin(b) + north[i] * math.cos(b) for i in range(3)
+    )

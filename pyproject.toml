@@ -16,6 +16,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+viz = ["folium>=0.15"]   # interactive HTML map (python -m mh370.interactive_map)
 
 [tool.setuptools.packages.find]
 where = ["src"]

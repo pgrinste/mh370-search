@@ -118,8 +118,9 @@ def main():
 
     if seg:
         ax.plot([p[1] for p in seg], [p[0] for p in seg], "w--", lw=1.2, label="seventh arc")
-    ax.scatter(*ARC_ANCHOR, marker="x", c="cyan", s=60, zorder=5)
-    ax.annotate("documented arc anchor\n(34.13S 93.95E)", ARC_ANCHOR,
+    a_lat, a_lon = ARC_ANCHOR
+    ax.scatter(a_lon, a_lat, marker="x", c="cyan", s=60, zorder=5)
+    ax.annotate("documented arc anchor\n(34.13S 93.95E)", (a_lon, a_lat),
                 xytext=(8, -14), textcoords="offset points", color="cyan", fontsize=8)
 
     for item in debris:

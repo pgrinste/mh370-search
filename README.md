@@ -21,13 +21,19 @@ The top-scoring cell sits at **34S, 94E** — essentially on the ATSB unsearched
 
 Matching those numbers is a sanity check, not an independent discovery — the drift field was calibrated to reach Reunion, so the result carries that prior. The holdout (Mozambique) and BFO checks are what give it any teeth.
 
+## Interactive map
+
+The same result as a browsable web page: probability heatmap, seventh arc with its documented anchor, top candidate tracks (great-circle), debris finds, and the official reference estimates — [output/mh370_interactive_map.html](output/mh370_interactive_map.html) opens in any browser (map tiles load from OSM).
+
+Regenerate it with `pip install -e ".[viz]"` then `python -m mh370.interactive_map`.
+
 ## Layout
 
 ```
 data/curated/   cleaned, documented datasets + data dictionary (committed)
-src/mh370/      package: geodesy, ping arc, flight paths, BFO, drift, scoring
+src/mh370/      package: geodesy, ping arc, flight paths, BFO, drift, scoring, interactive map
 tests/          unit tests incl. JACC arc-extent and holdout-drift validation
-output/         generated heatmap
+output/         generated heatmap + interactive HTML map
 ```
 
 ## Setup
